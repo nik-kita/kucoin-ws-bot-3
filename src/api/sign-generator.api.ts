@@ -26,14 +26,16 @@ export class SignGenerator {
     }
 
     public generateHeaders(
-        method: 'GET' | 'POST',
-        endpoint: string,
         options: {
+            method: 'GET' | 'POST',
+            endpoint: string,
             params?: object,
             body?: object,
-        } = {},
+        },
     ) {
-        const { params, body } = options;
+        const {
+            method, endpoint, params, body,
+        } = options;
         const _endpoint = params
             ? `${endpoint}?${QueryString.stringify(params)}`
             : endpoint;
