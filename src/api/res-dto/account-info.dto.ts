@@ -5,4 +5,4 @@ export type AccountInfoResDto = {
   balance: string,
   available: string,
   holds: string,
-}
+}[]
