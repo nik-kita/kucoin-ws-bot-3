@@ -3,9 +3,11 @@
 /* eslint-disable no-unused-expressions */
 
 import axios from 'axios';
+import { AccountInfroParamsDto } from './req-dto/account-info-params.dto';
 import {
     LimitOrderParamsDto, MarketFundsOrderParamsDto, MarketSizeOrderParamsDto, OrderParamsDto, _MarketOrderParamsDto,
 } from './req-dto/order-params.dto';
+import { AccountInfoResDto } from './res-dto/account-info.dto';
 import { BulletPrivateResType } from './res-dto/bullet-private.dto';
 import { OrderResType } from './res-dto/order.dto';
 import { SignGenerator } from './sign-generator.api';
@@ -14,6 +16,7 @@ import { SignGenerator } from './sign-generator.api';
 const HOST = 'https://api.kucoin.com';
 const API_V1_BULLET_PRIVATE = '/api/v1/bullet-private';
 const API_V1_ORDERS = '/api/v1/orders';
+const API_V1_ACCOUNTS = '/api/v1/accounts';
 
 class BaseMethod<ResType> {
     protected constructor(
@@ -57,11 +60,13 @@ class GetReq<ResType, ParamsType = any> extends BaseMethod<ResType> {
         );
     }
 
-    private paramsHook: (params: any) => any = (params: any) => params;
+    private paramsResolver: (params: any) => any = (params: any) => params;
+
+    public static [API_V1_ACCOUNTS] = new GetReq<AccountInfoResDto, AccountInfroParamsDto>(API_V1_ACCOUNTS);
 
     public static [API_V1_ORDERS] = (() => {
         const getReq = new GetReq<OrderResType, OrderParamsDto>(API_V1_ORDERS);
-        getReq.paramsHook = (params: LimitOrderParamsDto | _MarketOrderParamsDto) => {
+        getReq.paramsResolver = (params: LimitOrderParamsDto | _MarketOrderParamsDto) => {
             let _params: LimitOrderParamsDto | MarketFundsOrderParamsDto | MarketSizeOrderParamsDto;
 
             if ((params as LimitOrderParamsDto).price) {
@@ -83,7 +88,7 @@ class GetReq<ResType, ParamsType = any> extends BaseMethod<ResType> {
     })();
 
     public setParams(params: ParamsType) {
-        this.params! = this.paramsHook(params);
+        this.params! = this.paramsResolver(params);
 
         return this;
     }
