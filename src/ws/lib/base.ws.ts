@@ -15,7 +15,7 @@ export abstract class BaseWs {
 
     protected waitForConnection!: Promise<void>;
 
-    protected stopPingPong!: ReturnType<typeof setTimeout>;
+    protected stopPingPong!: typeof clearInterval;
 
     protected _ws!: WebSocket;
 
@@ -57,9 +57,12 @@ export abstract class BaseWs {
 
                         clearTimeout(offTimer);
 
-                        this.stopPingPong = setInterval(
-                            () => this._ws.send(this.generatePingPayload(ackMessage.id)),
-                            PING_PONG_INTERVAL,
+                        this.stopPingPong = clearInterval.bind(
+                            this,
+                            setInterval(
+                                () => this._ws.send(this.generatePingPayload(ackMessage.id)),
+                                PING_PONG_INTERVAL,
+                            ),
                         );
 
                         this.afterConnect.call(this, this._ws);
