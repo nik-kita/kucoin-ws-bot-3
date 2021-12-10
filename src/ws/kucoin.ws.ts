@@ -1,5 +1,5 @@
-import { WS_MARKET_TICKER_SELECT } from './dto/market-ticker.dto';
-import { AfterConnectCb } from './lib/base.ws';
+import { WS_MARKET_TICKER_SELECT } from './dto/pub/market-ticker.pub.dto';
+import { AfterConnectCb, CONSOLE_LOG_CB } from './lib/after-connect-cb';
 import { MarketTikerAllWs, MarketTikerSelectWs } from './lib/market-tiker.ws';
 
 export class KucoinWs {
@@ -8,7 +8,7 @@ export class KucoinWs {
         SELECT: {
             selectCoins(coins: string[]) {
                 return {
-                    settingBehaviour(cb: AfterConnectCb) {
+                    settingBehaviour(cb: AfterConnectCb = CONSOLE_LOG_CB) {
                         return new MarketTikerSelectWs(coins, cb);
                     },
                 };

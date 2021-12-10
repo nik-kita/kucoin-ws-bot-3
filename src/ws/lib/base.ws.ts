@@ -1,6 +1,7 @@
 /* eslint-disable max-classes-per-file */
 import Ws, { WebSocket } from 'ws';
 import { Req } from '../../api/req.api';
+import { AfterConnectCb, CONSOLE_LOG_CB } from './after-connect-cb';
 import {
     AckMessageDto, isAckMessageDto, isWelcomeMessageDto, WelcomeMessageDto,
 } from './dto/utility-messages.dto';
@@ -8,8 +9,6 @@ import { IGeneralPublish } from './dto/ws-pub.dto';
 
 const WAIT_FOR_CONNECT = 10_000;
 const PING_PONG_INTERVAL = 30_000;
-
-export type AfterConnectCb = (ws: WebSocket) => void;
 
 export abstract class BaseWs {
     protected isFirstConnection = true;
@@ -22,7 +21,7 @@ export abstract class BaseWs {
 
     protected constructor(
         protected subDto: IGeneralPublish,
-        protected afterConnect: AfterConnectCb,
+        protected afterConnect: AfterConnectCb = CONSOLE_LOG_CB,
     ) { }
 
     public async connect() {
@@ -67,6 +66,8 @@ export abstract class BaseWs {
 
                         resolve();
                     });
+                }).on('open', () => {
+                    this._ws.send(JSON.stringify(this.subDto));
                 });
             });
         } else {

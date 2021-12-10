@@ -1,5 +1,5 @@
 /* eslint-disable max-classes-per-file */
-import { IGeneralPublish } from '../lib/dto/ws-pub.dto';
+import { IGeneralPublish } from '../../lib/dto/ws-pub.dto';
 
 export const WS_MARKET_TICKER_ALL = '/market/ticker:all' as const;
 export const WS_MARKET_TICKER_SELECT = '/market/ticker:' as const;
