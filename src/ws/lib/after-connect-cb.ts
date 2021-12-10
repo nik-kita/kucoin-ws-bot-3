@@ -10,8 +10,11 @@ class AfterConnectCallBacks {
             console.log(message);
         });
     };
+
+    public static NOTHING_CB: AfterConnectCb = () => {};
 }
 
 export const {
     CONSOLE_LOG_CB,
+    NOTHING_CB,
 } = AfterConnectCallBacks;
