@@ -1,4 +1,4 @@
-export interface IGeneralSubscribe {
+export interface IGeneralPublish {
   id: string;
 
   type: 'subscribe' | 'unsubscribe';

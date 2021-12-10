@@ -4,10 +4,12 @@ import { Req } from '../../api/req.api';
 import {
     AckMessageDto, isAckMessageDto, isWelcomeMessageDto, WelcomeMessageDto,
 } from './dto/utility-messages.dto';
-import { IGeneralSubscribe } from './dto/ws-pub.dto';
+import { IGeneralPublish } from './dto/ws-pub.dto';
 
 const WAIT_FOR_CONNECT = 10_000;
 const PING_PONG_INTERVAL = 30_000;
+
+export type AfterConnectCb = (ws: WebSocket) => void;
 
 export abstract class BaseWs {
     protected isFirstConnection = true;
@@ -16,10 +18,11 @@ export abstract class BaseWs {
 
     protected stopPingPong!: ReturnType<typeof setTimeout>;
 
+    protected _ws!: WebSocket;
+
     protected constructor(
-        protected _ws: WebSocket,
-        protected subDto: IGeneralSubscribe,
-        protected afterConnect: (ws: WebSocket) => void,
+        protected subDto: IGeneralPublish,
+        protected afterConnect: AfterConnectCb,
     ) { }
 
     public async connect() {
@@ -35,7 +38,7 @@ export abstract class BaseWs {
             const [server] = instanceServers;
             const { id } = this.subDto;
 
-            this._ws = new Ws(BaseWs.generateConnectedUrl(server.endpoint, token, id));
+            this._ws = new Ws(this.generateConnectedUrl(server.endpoint, token, id));
 
             await new Promise<void>((resolve, reject) => {
                 const offTimer = setTimeout(
@@ -56,7 +59,7 @@ export abstract class BaseWs {
                         clearTimeout(offTimer);
 
                         this.stopPingPong = setInterval(
-                            () => this._ws.send(BaseWs.generatePingPayload(ackMessage.id)),
+                            () => this._ws.send(this.generatePingPayload(ackMessage.id)),
                             PING_PONG_INTERVAL,
                         );
 
@@ -71,11 +74,11 @@ export abstract class BaseWs {
         }
     }
 
-    private static generateConnectedUrl(endpoint: string, token: string, id: string) {
+    private generateConnectedUrl(endpoint: string, token: string, id: string) {
         return `${endpoint}?token=${token}&[id=${id}]`;
     }
 
-    private static generatePingPayload(id: string) {
+    private generatePingPayload(id: string) {
         return `{ "id": "${id}", "type": "ping" }`;
     }
 }
