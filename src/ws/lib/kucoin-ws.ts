@@ -1,6 +1,6 @@
 /* eslint-disable max-classes-per-file */
 import Ws, { WebSocket } from 'ws';
-import { Req } from '../api/req.api';
+import { Req } from '../../api/req.api';
 import {
     AckMessageDto, isAckMessageDto, isWelcomeMessageDto, WelcomeMessageDto,
 } from './dto/utility-messages.dto';
@@ -78,8 +78,4 @@ export abstract class BaseWs {
     private static generatePingPayload(id: string) {
         return `{ "id": "${id}", "type": "ping" }`;
     }
-}
-
-export class KucoinWs {
-
 }
