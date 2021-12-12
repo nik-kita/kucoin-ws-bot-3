@@ -1,15 +1,15 @@
-import { KucoinWs } from './ws/kucoinws';
-import { pause } from './ws/lib/utils/pause.util';
+import { Req } from './api/req.api';
 
 (async () => {
-    const ku = await KucoinWs.open();
+    try {
+        const res = await Req.GET['/api/v1/accounts'].setParams({
+            type: 'trade',
+            currency: 'ETH',
+        }).exec();
 
-    ku.addAction(console.log);
-    await ku.subscribe();
-    await pause(2000);
-    await ku.unsubscribe();
-    await pause(5000);
-    await ku.subscribe(['ETH-USDT']);
-    await pause(2000);
-    await ku.close();
+        console.log(res);
+    } catch (reqError: any) {
+        console.log('REQERROR:');
+        // console.log(reqError);
+    }
 })();

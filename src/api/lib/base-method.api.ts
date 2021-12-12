@@ -28,6 +28,7 @@ export class BaseMethod<TRes, TParams = any, TBody = any> {
             headers,
             method: this.method,
             url: HOST + this.endpoint,
+            params: this.params,
         });
         const { data } = axiosData;
 
