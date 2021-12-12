@@ -6,14 +6,15 @@ import {
     AckMessageDto, isAckMessageDto, isWelcomeMessageDto, WelcomeMessageDto,
 } from './dto/utility-messages.dto';
 import { IGeneralPublish } from './dto/ws-pub.dto';
+import { Promitter } from './utils/promitter.util';
 
 const WAIT_FOR_CONNECT = 10_000;
 const PING_PONG_INTERVAL = 30_000;
 
 export abstract class BaseWs {
-    protected isFirstConnection = true;
+    protected promitter!: Promitter;
 
-    protected waitForConnection!: Promise<void>;
+    protected isFirstConnection = true;
 
     protected stopPingPong!: typeof clearInterval;
 
@@ -22,7 +23,16 @@ export abstract class BaseWs {
     protected constructor(
         protected subDto: IGeneralPublish,
         protected afterConnect: AfterConnectCb = CONSOLE_LOG_CB,
-    ) { }
+    ) {
+        this.promitter = new Promitter();
+    }
+
+    public disconnect() {
+        this.stopPingPong();
+        this._ws.close();
+
+        return this.promitter.waitFor('close');
+    }
 
     public async connect() {
         if (this.isFirstConnection) {
@@ -38,44 +48,56 @@ export abstract class BaseWs {
             const { id } = this.subDto;
 
             this._ws = new Ws(this.generateConnectedUrl(server.endpoint, token, id));
+            const waitForConnect = this.promitter.waitFor('connect');
+            const offTimer = setTimeout(
+                () => this.promitter.reject(
+                    'connect',
+                    new Error(`Socket didn't connect until expected ${WAIT_FOR_CONNECT} mms`),
+                ),
+                WAIT_FOR_CONNECT,
+            );
 
-            await new Promise<void>((resolve, reject) => {
-                const offTimer = setTimeout(
-                    () => reject(new Error(`Socket didn't connect until expected ${WAIT_FOR_CONNECT} mms`)),
-                    WAIT_FOR_CONNECT,
-                );
+            this._ws.once('message', (welcomeMessage: WelcomeMessageDto) => {
+                if (!isWelcomeMessageDto(welcomeMessage)) {
+                    this.promitter.reject(
+                        'connect',
+                        new Error(`${welcomeMessage} is not of type ${WelcomeMessageDto.name}`),
+                    );
+                }
 
-                this._ws.once('message', (welcomeMessage: WelcomeMessageDto) => {
-                    if (!isWelcomeMessageDto(welcomeMessage)) {
-                        reject(new Error(`${welcomeMessage} is not of type ${WelcomeMessageDto.name}`));
+                this._ws.once('message', (ackMessage: AckMessageDto) => {
+                    if (!isAckMessageDto(ackMessage, id)) {
+                        this.promitter.reject(
+                            'connect',
+                            new Error(`${ackMessage} is not of type ${AckMessageDto.name}`),
+                        );
                     }
 
-                    this._ws.once('message', (ackMessage: AckMessageDto) => {
-                        if (!isAckMessageDto(ackMessage, id)) {
-                            reject(new Error(`${ackMessage} is not of type ${AckMessageDto.name}`));
-                        }
+                    clearTimeout(offTimer);
 
-                        clearTimeout(offTimer);
+                    this.stopPingPong = clearInterval.bind(
+                        this,
+                        setInterval(
+                            () => this._ws.send(this.generatePingPayload(ackMessage.id)),
+                            PING_PONG_INTERVAL,
+                        ),
+                    );
 
-                        this.stopPingPong = clearInterval.bind(
-                            this,
-                            setInterval(
-                                () => this._ws.send(this.generatePingPayload(ackMessage.id)),
-                                PING_PONG_INTERVAL,
-                            ),
-                        );
+                    this.afterConnect.call(this, this._ws);
 
-                        this.afterConnect.call(this, this._ws);
-
-                        resolve();
-                    });
-                }).on('open', () => {
-                    this._ws.send(JSON.stringify(this.subDto));
+                    this.promitter.resolve('connect');
                 });
+            }).on('open', () => {
+                this._ws.send(JSON.stringify(this.subDto));
+            }).on('close', () => {
+                this.promitter.resolve('close');
             });
+            await waitForConnect;
         } else {
             this.afterConnect.call(this, this._ws);
         }
+
+        return this;
     }
 
     private generateConnectedUrl(endpoint: string, token: string, id: string) {
