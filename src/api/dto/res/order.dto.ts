@@ -1,3 +1,3 @@
-export type OrderResType = {
+export type TOrderRes = {
   orderId: string,
 }

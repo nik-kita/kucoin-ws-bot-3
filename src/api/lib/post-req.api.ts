@@ -1,9 +1,9 @@
-import { BulletPrivateResType } from '../dto/res/bullet-private.dto';
+import { TBulletPrivateRes } from '../dto/res/bullet-private.dto';
 import { BaseMethod } from './base-method.api';
 import { POST } from './constants.api';
 
 const { API_V1_BULLET_PRIVATE } = POST;
-export class PostReq<ResType, ParamsType = any, BodyType = any> extends BaseMethod<ResType, ParamsType, BodyType> {
+export class PostReq<TRes, TParams = any, TBody = any> extends BaseMethod<TRes, TParams, TBody> {
     private constructor(
         endpoint: string,
         params?: object,
@@ -18,6 +18,6 @@ export class PostReq<ResType, ParamsType = any, BodyType = any> extends BaseMeth
     }
 
     public static [API_V1_BULLET_PRIVATE] = new PostReq(API_V1_BULLET_PRIVATE) as Omit<
-      PostReq<BulletPrivateResType>, 'setParams'
+      PostReq<TBulletPrivateRes>, 'setParams'
   >;
 }

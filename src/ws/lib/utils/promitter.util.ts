@@ -1,10 +1,24 @@
 import EventEmitter from 'events';
 
+export type TRmAction = {
+    listener: (...args: any[]) => void,
+
+    wsId: string,
+}
+
 export class Promitter {
     private emitter!: EventEmitter;
 
     public constructor() {
         this.emitter = new EventEmitter();
+    }
+
+    public on(label: string, cb: (...args: any[]) => void) {
+        this.emitter.on(label, cb);
+    }
+
+    public rmListener(label: string, cb: (...args: any[]) => void) {
+        this.emitter.removeListener(label, cb);
     }
 
     public waitFor(label: string) {
@@ -22,7 +36,7 @@ export class Promitter {
         this.emitter.emit(label, data);
     }
 
-    public reject(label: string, data?: any | any[]) {
+    public emitReject(label: string, data?: any | any[]) {
         this.emitter.emit(this.generateLabelForReject(label), data);
     }
 

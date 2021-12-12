@@ -4,6 +4,7 @@ export type OnMessageCb = (message: BaseMessageDto) => void;
 
 class DefaultOnMessageCbs {
     public static CONSOLE_LOG_CB: OnMessageCb = (message) => {
+        // eslint-disable-next-line no-console
         console.log(message);
     };
 

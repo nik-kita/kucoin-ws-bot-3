@@ -1,4 +1,5 @@
 /* eslint-disable max-classes-per-file */
+export type TMessage = 'message' | 'ack' | 'welcome' | 'error';
 export class BaseMessageDto {
     id!: string;
 

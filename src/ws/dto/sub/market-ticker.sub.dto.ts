@@ -2,7 +2,7 @@
 import { WebSocket } from 'ws';
 import { BaseMessageDto } from '../../lib/dto/utility-messages.dto';
 
-export type DataType = {
+type TData = {
   bestAsk: string,
   bestAskSize: string,
   bestBid: string,
@@ -18,7 +18,7 @@ export type DataType = {
   agio?: number,
 }
 
-export class MessageType extends BaseMessageDto {
+export class MarketTickerMessageDto extends BaseMessageDto {
     target!: WebSocket;
 
     type!: 'message';
@@ -27,5 +27,5 @@ export class MessageType extends BaseMessageDto {
 
     subject!: string;
 
-    data!: DataType;
+    data!: TData;
 }

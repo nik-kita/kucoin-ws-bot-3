@@ -3,13 +3,13 @@ import {
     LimitOrderParamsDto, MarketFundsOrderParamsDto, MarketSizeOrderParamsDto, OrderParamsDto, _MarketOrderParamsDto,
 } from '../dto/req/order-params.dto';
 import { AccountInfoResDto } from '../dto/res/account-info.dto';
-import { OrderResType } from '../dto/res/order.dto';
+import { TOrderRes } from '../dto/res/order.dto';
 import { BaseMethod } from './base-method.api';
 import { GET } from './constants.api';
 
 const { API_V1_ACCOUNTS, API_V1_ORDERS } = GET;
 
-export class GetReq<ResType, ParamsType = any> extends BaseMethod<ResType, ParamsType> {
+export class GetReq<TRes, TParams = any> extends BaseMethod<TRes, TParams> {
     private constructor(
         endpoint: string,
         params?: object,
@@ -24,7 +24,7 @@ export class GetReq<ResType, ParamsType = any> extends BaseMethod<ResType, Param
     public static [API_V1_ACCOUNTS] = new GetReq(API_V1_ACCOUNTS) as GetReq<AccountInfoResDto, AccountInfroParamsDto>;
 
     public static [API_V1_ORDERS] = (() => {
-        const getReq = new GetReq<OrderResType, OrderParamsDto>(API_V1_ORDERS);
+        const getReq = new GetReq<TOrderRes, OrderParamsDto>(API_V1_ORDERS);
         getReq.paramsResolver = (params: LimitOrderParamsDto | _MarketOrderParamsDto) => {
             let _params: LimitOrderParamsDto | MarketFundsOrderParamsDto | MarketSizeOrderParamsDto;
 
@@ -45,6 +45,6 @@ export class GetReq<ResType, ParamsType = any> extends BaseMethod<ResType, Param
             return _params;
         };
 
-        return getReq as Omit<GetReq<OrderResType, OrderParamsDto>, 'exec'>;
+        return getReq as Omit<GetReq<TOrderRes, OrderParamsDto>, 'exec'>;
     })();
 }

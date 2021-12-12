@@ -1,4 +1,4 @@
-export type BulletPrivateResType = {
+export type TBulletPrivateRes = {
   token: string,
   instanceServers: [
       {
