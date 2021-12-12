@@ -1,4 +1,4 @@
-import { BulletPrivateResType } from '../res-dto/bullet-private.dto';
+import { BulletPrivateResType } from '../dto/res/bullet-private.dto';
 import { BaseMethod } from './base-method.api';
 import { POST } from './constants.api';
 

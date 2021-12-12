@@ -18,7 +18,7 @@ export class Promitter {
         });
     }
 
-    public resolve(label: string, data?: any | any[]) {
+    public emit(label: string, data?: any | any[]) {
         this.emitter.emit(label, data);
     }
 

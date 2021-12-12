@@ -1,4 +1,6 @@
+/* eslint-disable max-classes-per-file */
 import { WebSocket } from 'ws';
+import { BaseMessageDto } from '../../lib/dto/utility-messages.dto';
 
 export type DataType = {
   bestAsk: string,
@@ -16,7 +18,7 @@ export type DataType = {
   agio?: number,
 }
 
-export class MessageType {
+export class MessageType extends BaseMessageDto {
     target!: WebSocket;
 
     type!: 'message';

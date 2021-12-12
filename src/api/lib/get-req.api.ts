@@ -1,9 +1,9 @@
-import { AccountInfroParamsDto } from '../req-dto/account-info-params.dto';
+import { AccountInfroParamsDto } from '../dto/req/account-info-params.dto';
 import {
     LimitOrderParamsDto, MarketFundsOrderParamsDto, MarketSizeOrderParamsDto, OrderParamsDto, _MarketOrderParamsDto,
-} from '../req-dto/order-params.dto';
-import { AccountInfoResDto } from '../res-dto/account-info.dto';
-import { OrderResType } from '../res-dto/order.dto';
+} from '../dto/req/order-params.dto';
+import { AccountInfoResDto } from '../dto/res/account-info.dto';
+import { OrderResType } from '../dto/res/order.dto';
 import { BaseMethod } from './base-method.api';
 import { GET } from './constants.api';
 

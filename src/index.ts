@@ -1,12 +1,9 @@
-import { KucoinWs } from './ws/kucoin.ws';
+import { KucoinWs } from './ws/kucoinws';
 
 (async () => {
-    const ku = await KucoinWs['/market/ticker:']
-        .SELECT
-        .selectCoins(['BTC-USDT', 'PAXG-USDT'])
-        .settingBehaviour()
-        .connect();
+    const ku = await KucoinWs.open();
+
     console.log('connected');
-    await ku.disconnect();
+    await ku.close();
     console.log('disconnected');
 })();
