@@ -3,7 +3,7 @@ import { HOST } from './constants.api';
 import { SignGenerator } from './sign-generator.api';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export class BaseMethod<ResType, ParamsType = any, BodyType = any> {
+export class BaseMethod<TRes, TParams = any, TBody = any> {
     protected constructor(
       private method: 'GET' | 'POST',
       protected endpoint: string,
@@ -12,6 +12,8 @@ export class BaseMethod<ResType, ParamsType = any, BodyType = any> {
     ) { }
 
     protected paramsResolver: (params: any) => any = (params: any) => params;
+
+    protected bodyResolver: (body: any) => any = (body: any) => body;
 
     public async exec() {
         const headers = SignGenerator
@@ -24,19 +26,28 @@ export class BaseMethod<ResType, ParamsType = any, BodyType = any> {
                     body: this.body,
                 },
             );
+
         const { data: axiosData } = await axios({
             headers,
             method: this.method,
             url: HOST + this.endpoint,
+            params: this.params,
+            data: this.body,
         });
         const { data } = axiosData;
 
-        return data as Promise<ResType | undefined>;
+        return data as Promise<TRes | undefined>;
     }
 
-    public setParams(params: ParamsType) {
-      this.params! = this.paramsResolver(params);
+    public setBody(body: TBody) {
+        this.body = this.bodyResolver(body);
 
-      return this;
+        return this;
+    }
+
+    public setParams(params: TParams) {
+        this.params = this.paramsResolver(params);
+
+        return this;
     }
 }
