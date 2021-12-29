@@ -1,6 +1,6 @@
 import { BaseMessageDto } from './dto/utility-messages.dto';
 
-export type OnMessageCb = (message: BaseMessageDto) => void;
+export type OnMessageCb<T extends BaseMessageDto = BaseMessageDto> = (message: T) => void;
 
 class DefaultOnMessageCbs {
     public static CONSOLE_LOG_CB: OnMessageCb = (message) => {

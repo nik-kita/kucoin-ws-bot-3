@@ -33,7 +33,7 @@ export class KucoinWs {
         return this;
     }
 
-    addAction(cb: OnMessageCb): TRmAction {
+    addAction(cb: OnMessageCb<any>): TRmAction {
         this.promitter.on('message', cb);
 
         return {

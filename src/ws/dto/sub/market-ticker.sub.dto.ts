@@ -2,7 +2,7 @@
 import { WebSocket } from 'ws';
 import { BaseMessageDto } from '../../lib/dto/utility-messages.dto';
 
-type TData = {
+export type TData = {
   bestAsk: string,
   bestAskSize: string,
   bestBid: string,
