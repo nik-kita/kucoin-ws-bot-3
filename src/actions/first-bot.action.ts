@@ -4,10 +4,15 @@ import { MarketTickerMessageDto, TData } from '../ws/dto/sub/market-ticker.sub.d
 const coins = new Map<string, MarketTickerMessageDto>();
 const leaders = new Map<number, MarketTickerMessageDto>();
 const leaderNames: string[] = [];
-
+let isFirstTime = true;
 class FirstBotAction {
-    public static firstBotAction(message: MarketTickerMessageDto) {
-        if (!message.subject.includes('USDT')) return;
+    private static rmInterval: any;
+
+    private static firstBotAction(message: MarketTickerMessageDto) {
+        if (!message.subject.includes('USDT')
+        || [
+            '3S', '3L', '5S', '5L',
+        ].some((bad) => message.subject.split('-')[0].includes(bad))) return;
 
         const { data, subject } = message;
         const _message = coins.get(subject);
@@ -35,12 +40,24 @@ class FirstBotAction {
                 leaderNames[index] = l.subject;
             }
 
-            Array.from(leaders.values()).forEach((v) => console.log(`${v.subject}: ${v.data.agio}%    ${v.data.lastPrice}`));
-            console.log();
+            if (isFirstTime) {
+                isFirstTime = false;
+                FirstBotAction.rmInterval = setInterval(() => {
+                    Array.from(leaders.values()).forEach((v) => console.log(`${v.subject}: ${v.data.agio}%    ${v.data.lastPrice}`));
+                    console.log();
+                }, 5000);
+            }
         });
+    }
+
+    public static getFirstBotArtifacts() {
+        return {
+            onMessage: FirstBotAction.firstBotAction,
+            rmInterval: () => clearInterval(FirstBotAction.rmInterval),
+        };
     }
 }
 
 export const {
-    firstBotAction,
+    getFirstBotArtifacts,
 } = FirstBotAction;
