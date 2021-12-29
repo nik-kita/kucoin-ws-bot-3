@@ -16,7 +16,11 @@ class SecondBotActions {
     private static waitForPurchase = SecondBotActions.promitter.waitFor('purchase');
 
     private static onMessage(message: MarketTickerMessageDto) {
-        if (!message.subject.includes('USDT') || IS_PURCHASED) return;
+        if (!message.subject.includes('USDT')
+          || [
+              '3S', '3L', '5S', '5L',
+          ].some((bad) => message.subject.split('-')[0].includes(bad))
+          || IS_PURCHASED) return;
 
         const { data, subject } = message;
         let _message = SecondBotActions.coins.get(subject);
@@ -43,15 +47,16 @@ class SecondBotActions {
             const fixed = price.split('.')[1].length;
             const priceToBuy = (parseFloat(_message.data.lastPrice) * 1.1).toFixed(fixed);
             const size = Math.floor(AMOUNT_TO_BUY_USDT / parseFloat(priceToBuy)).toString();
-
-            Req.POST['/api/v1/orders'].setBody({
+            const purchaseBody = {
                 symbol: subject,
-                side: 'buy',
-                type: 'limit',
+                side: 'buy' as const,
+                type: 'limit' as const,
                 clientOid: v4(),
                 price: priceToBuy,
                 size,
-            }).exec().then((res) => {
+            };
+
+            Req.POST['/api/v1/orders'].setBody(purchaseBody).exec().then((res) => {
                 console.log('PURCHASING!');
                 console.log(res);
                 console.log('---------------------');
