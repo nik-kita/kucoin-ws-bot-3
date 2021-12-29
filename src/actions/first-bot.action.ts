@@ -29,15 +29,14 @@ class FirstBotAction {
         const _leaders = Array.from(coins.values()).sort((a: MarketTickerMessageDto, b: MarketTickerMessageDto) => a.data.agio! - b.data.agio!).slice(-5);
 
         _leaders.forEach((l, i, a) => {
-            if (!leaderNames.includes(l.subject)
-            || parseFloat(l.data.lastPrice) - parseFloat(Array.from(leaders.values()).find((leader) => leader.subject === l.subject)!.data.lastPrice) > 0.5) {
+            if (!leaderNames.includes(l.subject)) {
                 const index = a.length - i;
-                leaders.set(index, { ...l });
+                leaders.set(index, l);
                 leaderNames[index] = l.subject;
-
-                Array.from(leaders.values()).sort((first, second) => second.data.agio! - first.data.agio!).forEach((v) => console.log(`${v.subject}: ${v.data.agio}%    ${v.data.lastPrice}`));
-                console.log();
             }
+
+            Array.from(leaders.values()).forEach((v) => console.log(`${v.subject}: ${v.data.agio}%    ${v.data.lastPrice}`));
+            console.log();
         });
     }
 }
