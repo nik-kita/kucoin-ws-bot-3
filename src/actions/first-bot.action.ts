@@ -4,6 +4,7 @@ import { MarketTickerMessageDto, TData } from '../ws/dto/sub/market-ticker.sub.d
 const coins = new Map<string, MarketTickerMessageDto>();
 const leaders = new Map<number, MarketTickerMessageDto>();
 const leaderNames: string[] = [];
+const LOG_INTERVAL = 1500;
 let isFirstTime = true;
 class FirstBotAction {
     private static rmInterval: any;
@@ -45,7 +46,7 @@ class FirstBotAction {
                 FirstBotAction.rmInterval = setInterval(() => {
                     Array.from(leaders.values()).forEach((v) => console.log(`${v.subject}: ${v.data.agio}%    ${v.data.lastPrice}`));
                     console.log();
-                }, 5000);
+                }, LOG_INTERVAL);
             }
         });
     }

@@ -56,6 +56,8 @@ class SecondBotActions {
                 size,
             };
 
+            console.log(purchaseBody);
+
             Req.POST['/api/v1/orders'].setBody(purchaseBody).exec().then((res) => {
                 console.log('PURCHASING!');
                 console.log(res);
