@@ -33,7 +33,7 @@ class FirstBotAction {
             _data.agio = 100 - (parseFloat(_data.startPrice) * 100) / parseFloat(price);
         }
 
-        const _leaders = Array.from(coins.values()).sort((a: MarketTickerMessageDto, b: MarketTickerMessageDto) => a.data.agio! - b.data.agio!).slice(LEADER_AMOUNT);
+        const _leaders = Array.from(coins.values()).sort((a: MarketTickerMessageDto, b: MarketTickerMessageDto) => a.data.agio! - b.data.agio!).slice(-LEADER_AMOUNT);
 
         _leaders.forEach((l, i, a) => {
             if (!leaderNames.includes(l.subject)) {
