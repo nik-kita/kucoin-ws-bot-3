@@ -6,6 +6,7 @@ import { Promitter } from '../ws/lib/utils/promitter.util';
 
 const MIN_AGIO_FOR_BUY = 1;
 const AMOUNT_TO_BUY_USDT = 5;
+const MULTIPLY_PRICE_PERCENT = 1.1;
 let IS_PURCHASED = false;
 
 class SecondBotActions {
@@ -45,7 +46,7 @@ class SecondBotActions {
 
             const { price } = _message.data;
             const fixed = price.split('.')[1].length;
-            const priceToBuy = (parseFloat(_message.data.lastPrice) * 1.1).toFixed(fixed);
+            const priceToBuy = (parseFloat(_message.data.lastPrice) * MULTIPLY_PRICE_PERCENT).toFixed(fixed);
             const size = Math.floor(AMOUNT_TO_BUY_USDT / parseFloat(priceToBuy)).toString();
             const purchaseBody = {
                 symbol: subject,
